@@ -115,12 +115,12 @@ function getInt32Memory0() {
 * @param {string} s
 * @returns {Map<any, any>}
 */
-export function eval(s) {
+export function dice_eval(s) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         var ptr0 = passStringToWasm0(s, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         var len0 = WASM_VECTOR_LEN;
-        wasm.eval(retptr, ptr0, len0);
+        wasm.dice_eval(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         var r2 = getInt32Memory0()[retptr / 4 + 2];
