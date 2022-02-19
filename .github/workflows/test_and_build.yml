@@ -24,6 +24,7 @@ jobs:
         with:
           version: 'latest'
       - run: (cd wasm_lib && wasm-pack build --release)
+      - run: rm -rf wasm_lib/pkg/.gitignore
       - uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
