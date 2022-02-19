@@ -25,6 +25,10 @@ jobs:
           version: 'latest'
       - run: (cd wasm_lib && wasm-pack build --release)
       - run: rm -rf wasm_lib/pkg/.gitignore
+      - run: |
+          cd wasm_lib/pkg
+          tmp=$(mktemp)
+          jq '.name = "dice_distribution"' package.json > "$tmp" && mv "$tmp" package.json
       - uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
