@@ -4,13 +4,13 @@
 * @param {string} s
 * @returns {Map<any, any>}
 */
-export function eval(s: string): Map<any, any>;
+export function dice_eval(s: string): Map<any, any>;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly eval: (a: number, b: number, c: number) => void;
+  readonly dice_eval: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;
