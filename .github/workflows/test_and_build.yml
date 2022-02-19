@@ -23,8 +23,7 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: 'latest'
-      - run: |
-        (cd wasm_lib && wasm-pack build --release)
+      - run: (cd wasm_lib && wasm-pack build --release)
       - uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
