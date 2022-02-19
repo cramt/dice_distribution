@@ -19,7 +19,7 @@ jobs:
     runs-on: "ubuntu-20.04"
     strategy:
       matrix:
-        targets:
+        target:
           - bundler
           - nodejs
           - web
@@ -29,7 +29,7 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: 'latest'
-      - run: (cd wasm_lib && wasm-pack build --release --target ${{ matrix.ruby }}) 
+      - run: (cd wasm_lib && wasm-pack build --release --target ${{ matrix.target }}) 
       - run: rm -rf wasm_lib/pkg/.gitignore
       - run: |
           cd wasm_lib/pkg
@@ -38,6 +38,6 @@ jobs:
       - uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
-          BRANCH: build_${{ matrix.ruby }}
+          BRANCH: build_${{ matrix.target }}
           FOLDER: wasm_lib/pkg
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
