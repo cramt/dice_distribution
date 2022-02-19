@@ -23,7 +23,7 @@ impl Display for DistError {
 impl Error for DistError {}
 
 #[wasm_bindgen]
-pub fn eval(s: &str) -> Result<Map, String> {
+pub fn dice_eval(s: &str) -> Result<Map, String> {
     let ast = parser::ast::Value::from_str(s)
         .map_err(DistError::Parse)
         .map_err(|x| x.to_string())?;
