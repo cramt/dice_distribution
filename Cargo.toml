@@ -1,0 +1,2 @@
+[workspace]
+members = ["model", "wasm_lib", "parser"]
