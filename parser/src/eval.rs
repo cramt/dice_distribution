@@ -29,6 +29,8 @@ impl From<EvalValue> for Distribution {
 #[derive(Debug, Shoulda)]
 pub enum EvalError {
     InvalidArgForDice,
+    InvalidArgForKeepHeighest,
+    InvalidArgForCountSuccesses,
     MultiplyDiceWithDice,
     DivideDiceWithDice,
     DivideByZero,
@@ -47,6 +49,12 @@ impl Display for EvalError {
             EvalError::DivideByZero => {
                 write!(f, "Eval Error: Tried dividing by zero")
             }
+            EvalError::InvalidArgForKeepHeighest => {
+                write!(f, "Eval Error: Invalid arg for keep heighest")
+            }
+            EvalError::InvalidArgForCountSuccesses => {
+                write!(f, "Eval Error: Invalid arg for count successes")
+            }
         }
     }
 }
@@ -60,7 +68,7 @@ impl Operator {
             Operator::Minus(l, r) => l - r,
             Operator::Multiply(l, r) => l * r,
             Operator::Divide(l, r) => l / r,
-            Operator::KeepHighest(l, r) => todo!(),
+            Operator::KeepHighest(l, r) => l.keep_heighest(r),
             Operator::CountSuccesses(l, r) => todo!(),
             Operator::Dice(l, r) => l.dice(r),
         }
@@ -73,6 +81,124 @@ impl Value {
             Value::Default => Ok(EvalValue::Constant(0)),
             Value::Constant(c) => Ok(EvalValue::Constant(c)),
             Value::Operator(o) => o.as_ref().clone().eval(),
+        }
+    }
+
+    pub fn count_successes(self, rhs: Self) -> Result<EvalValue, EvalError> {
+        match (self, rhs) {
+            (Value::Default, Value::Default) => Ok(EvalValue::PreDice(
+                PosibilitySpace::from(Dice(10)).count_successes(6),
+            )),
+            (Value::Default, Value::Constant(c)) => {
+                if c < 1 {
+                    Err(EvalError::InvalidArgForCountSuccesses)
+                } else {
+                    Ok(EvalValue::PreDice(
+                        PosibilitySpace::from(Dice(10)).count_successes(c as usize),
+                    ))
+                }
+            }
+            (Value::Default, Value::Operator(o)) => match o.as_ref().clone().eval()? {
+                EvalValue::Constant(c) => {
+                    if c < 1 {
+                        Err(EvalError::InvalidArgForCountSuccesses)
+                    } else {
+                        Ok(EvalValue::PreDice(
+                            PosibilitySpace::from(Dice(10)).count_successes(c as usize),
+                        ))
+                    }
+                }
+                _ => Err(EvalError::InvalidArgForCountSuccesses),
+            },
+            (Value::Operator(o), Value::Default) => match o.as_ref().clone().eval()? {
+                EvalValue::PreDice(d) => Ok(EvalValue::PreDice(d.count_successes(6))),
+                _ => Err(EvalError::InvalidArgForCountSuccesses),
+            },
+            (Value::Operator(o), Value::Constant(c)) => {
+                if c < 1 {
+                    Err(EvalError::InvalidArgForCountSuccesses)
+                } else {
+                    match o.as_ref().clone().eval()? {
+                        EvalValue::PreDice(d) => {
+                            Ok(EvalValue::PreDice(d.count_successes(c as usize)))
+                        }
+                        _ => Err(EvalError::InvalidArgForCountSuccesses),
+                    }
+                }
+            }
+            (Value::Operator(l), Value::Operator(r)) => {
+                match (l.as_ref().clone().eval()?, r.as_ref().clone().eval()?) {
+                    (EvalValue::PreDice(d), EvalValue::Constant(c)) => {
+                        if c < 1 {
+                            Err(EvalError::InvalidArgForCountSuccesses)
+                        } else {
+                            Ok(EvalValue::PreDice(d.count_successes(c as usize)))
+                        }
+                    }
+                    _ => Err(EvalError::InvalidArgForCountSuccesses),
+                }
+            }
+            _ => Err(EvalError::InvalidArgForCountSuccesses),
+        }
+    }
+
+    pub fn keep_heighest(self, rhs: Self) -> Result<EvalValue, EvalError> {
+        match (self, rhs) {
+            (Value::Default, Value::Default) => Ok(EvalValue::PreDice(
+                PosibilitySpace::from(Dice(20)).multiply(2).keep_highest(1),
+            )),
+            (Value::Default, Value::Constant(c)) => {
+                if c < 1 {
+                    Err(EvalError::InvalidArgForKeepHeighest)
+                } else {
+                    Ok(EvalValue::PreDice(
+                        PosibilitySpace::from(Dice(20))
+                            .multiply(2)
+                            .keep_highest(c as usize),
+                    ))
+                }
+            }
+            (Value::Default, Value::Operator(o)) => match o.as_ref().clone().eval()? {
+                EvalValue::Constant(c) => {
+                    if c < 1 {
+                        Err(EvalError::InvalidArgForKeepHeighest)
+                    } else {
+                        Ok(EvalValue::PreDice(
+                            PosibilitySpace::from(Dice(20))
+                                .multiply(2)
+                                .keep_highest(c as usize),
+                        ))
+                    }
+                }
+                _ => Err(EvalError::InvalidArgForKeepHeighest),
+            },
+            (Value::Operator(o), Value::Default) => match o.as_ref().clone().eval()? {
+                EvalValue::PreDice(d) => Ok(EvalValue::PreDice(d.keep_highest(1))),
+                _ => Err(EvalError::InvalidArgForKeepHeighest),
+            },
+            (Value::Operator(o), Value::Constant(c)) => {
+                if c < 1 {
+                    Err(EvalError::InvalidArgForKeepHeighest)
+                } else {
+                    match o.as_ref().clone().eval()? {
+                        EvalValue::PreDice(d) => Ok(EvalValue::PreDice(d.keep_highest(c as usize))),
+                        _ => Err(EvalError::InvalidArgForKeepHeighest),
+                    }
+                }
+            }
+            (Value::Operator(l), Value::Operator(r)) => {
+                match (l.as_ref().clone().eval()?, r.as_ref().clone().eval()?) {
+                    (EvalValue::PreDice(d), EvalValue::Constant(c)) => {
+                        if c < 1 {
+                            Err(EvalError::InvalidArgForKeepHeighest)
+                        } else {
+                            Ok(EvalValue::PreDice(d.keep_highest(c as usize)))
+                        }
+                    }
+                    _ => Err(EvalError::InvalidArgForKeepHeighest),
+                }
+            }
+            _ => Err(EvalError::InvalidArgForKeepHeighest),
         }
     }
 
