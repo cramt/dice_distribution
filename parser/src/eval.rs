@@ -4,7 +4,7 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
-use model::{dice::Dice, distribution::Distribution, posibility_space::PosibilitySpace, Int};
+use model::{dice::Dice, distribution::Distribution, posibility_space::PosibilitySpace, Int, BigInt};
 use shoulda::Shoulda;
 
 use crate::ast::{Operator, Value};
@@ -227,7 +227,7 @@ impl Value {
                     Err(EvalError::InvalidArgForDice)
                 } else {
                     Ok(EvalValue::PreDice(
-                        PosibilitySpace::from(Dice(6)).multiply(c as u32),
+                        PosibilitySpace::from(Dice(6)).multiply(c as BigInt),
                     ))
                 }
             }
@@ -236,7 +236,7 @@ impl Value {
                     Err(EvalError::InvalidArgForDice)
                 } else {
                     Ok(EvalValue::PreDice(
-                        PosibilitySpace::from(Dice(r as Int)).multiply(l as u32),
+                        PosibilitySpace::from(Dice(r as Int)).multiply(l as BigInt),
                     ))
                 }
             }
@@ -246,7 +246,7 @@ impl Value {
                         Err(EvalError::InvalidArgForDice)
                     } else {
                         Ok(EvalValue::PreDice(
-                            PosibilitySpace::from(Dice(x as Int)).multiply(c as u32),
+                            PosibilitySpace::from(Dice(x as Int)).multiply(c as BigInt),
                         ))
                     }
                 }
@@ -259,7 +259,7 @@ impl Value {
                         Err(EvalError::InvalidArgForDice)
                     } else {
                         Ok(EvalValue::PreDice(
-                            PosibilitySpace::from(Dice(6)).multiply(c as u32),
+                            PosibilitySpace::from(Dice(6)).multiply(c as BigInt),
                         ))
                     }
                 }
@@ -271,7 +271,7 @@ impl Value {
                         Err(EvalError::InvalidArgForDice)
                     } else {
                         Ok(EvalValue::PreDice(
-                            PosibilitySpace::from(Dice(c as Int)).multiply(x as u32),
+                            PosibilitySpace::from(Dice(c as Int)).multiply(x as BigInt),
                         ))
                     }
                 }
@@ -284,7 +284,7 @@ impl Value {
                             Err(EvalError::InvalidArgForDice)
                         } else {
                             Ok(EvalValue::PreDice(
-                                PosibilitySpace::from(Dice(r as Int)).multiply(l as u32),
+                                PosibilitySpace::from(Dice(r as Int)).multiply(l as BigInt),
                             ))
                         }
                     }
